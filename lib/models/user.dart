@@ -12,9 +12,9 @@ class User {
   User({required this.user, required this.token});
 
   factory User.fromJson(Map<String, dynamic> json) =>
+         
       User(user: UserClass.fromJson(json["user"]), token: json["token"]);
-      //body اللي هو ال  json اعطيتو 
-      //من معلومات المستخدم اللي جبتها من الرد  object هون بدي اعمل 
+       
 
   Map<String, dynamic> toJson() => {"user": user.toJson(), "token": token};
   

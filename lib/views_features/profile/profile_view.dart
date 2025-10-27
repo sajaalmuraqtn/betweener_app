@@ -1,22 +1,98 @@
+import 'package:betweeener_app/controllers/followers_controller.dart';
+import 'package:betweeener_app/controllers/link_controller.dart';
+import 'package:betweeener_app/controllers/user_controller.dart';
+import 'package:betweeener_app/core/util/constants.dart';
+import 'package:betweeener_app/models/follow_model.dart';
+import 'package:betweeener_app/models/link_response_model.dart';
+import 'package:betweeener_app/views_features/links/add_link_view.dart';
+import 'package:betweeener_app/views_features/links/edit_link_view.dart';
+import 'package:betweeener_app/views_features/profile/editprofile_view.dart';
+import 'package:betweeener_app/views_features/widgets/custom_following_widget_button.dart';
+import 'package:betweeener_app/views_features/widgets/custom_profile_avater_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
- 
-class ProfileView extends StatelessWidget {
-    static String id = '/profileView';
-
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+  static String id = '/profileView';
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  List<LinkElement> links = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getLinks();
+  }
+
+  Future<void> getLinks() async {
+    try {
+      final result = await getUserLinks();
+      setState(() {
+        links = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load links')));
+    }
+  }
+
+  void deleteLink(LinkElement link) async {
+    await deleteUserLink(link.id);
+
+    setState(() {
+      getLinks();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Link Deleted successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void editLink(LinkElement oldLink) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EditLinkView(link: oldLink)),
+    );
+
+    if (result != null && result is LinkElement) {
+      int index = links.indexWhere((l) => l.id == oldLink.id);
+      if (index != -1) {
+        setState(() {
+          getLinks();
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Link Updated successfully'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: kScaffoldColor,
       appBar: AppBar(
         title: const Text(
           'Profile',
-          style: TextStyle(
-            color: Color(0xFF2B2B4F),
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -26,60 +102,59 @@ class ProfileView extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildProfileCard(),
+            CustomProfileCard(),
             const SizedBox(height: 20),
-            
-            // رابط عادي (غير قابل للتمرير)
-            _buildSocialLinkContent(
-              platform: 'INSTAGRAM',
-              url: 'https://www.instagram.com/a7medhq/',
-              color: Colors.pink[100]!,
-            ),
-            const SizedBox(height: 10),
-
-             _buildSlidableSocialLink(
-              platform: 'M',
-              url: 'https://www.medium.com/a7medhq/',
-              color: Colors.blue[100]!,
-            ),
-            const SizedBox(height: 10),
-            
-            // رابط آخر قابل للتمرير
-            _buildSlidableSocialLink(
-              platform: 'INSTAGRAM',
-              url: 'https://www.instagram.com/another_handle/',
-              color: Colors.pink[100]!,
-            ),
-            const SizedBox(height: 10),
-
-            _buildSocialLinkContent(
-              platform: 'INSTAGRAM',
-              url: 'https://www.instagram.com/yet_another/',
-              color: Colors.deepPurple[100]!,
-            ),
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : links.isEmpty
+                ? const Center(child: Text("No Links"))
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: links.length,
+                    itemBuilder: (context, index) {
+                      final link = links[index];
+                      return CustomSlidableSocialLink(link);
+                    },
+                  ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // الانتقال إلى شاشة إضافة رابط
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddLinkScreen()),
-          );
-        },
-        backgroundColor: const Color(0xFF2B2B4F),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton(
+          onPressed: () async {
+            final newLink = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => AddLinkView()),
+            );
+
+            if (newLink != null && newLink is LinkElement) {
+              setState(() {
+                links.add(newLink);
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Link Added successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          },
+          backgroundColor: kPrimaryColor,
+
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
     );
   }
 
-  // بناء بطاقة الملف الشخصي
-  Widget _buildProfileCard() {
+  Widget CustomProfileCard() {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF2B2B4F),
+        color: kPrimaryColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -89,90 +164,137 @@ class ProfileView extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CircleAvatar(
-            radius: 40,
-            backgroundImage: NetworkImage('https://i.ibb.co/L9H8FvX/profile-pic.png'), // صورة افتراضية
-            backgroundColor: Colors.white,
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
+      child: FutureBuilder(
+        future: getCurrentUser(context),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    const Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                const CustomProfileAvaterWidget(height: 80),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${snapshot.data!.user.name}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white70),
-                      onPressed: () {},
-                    ),
-                  ],
+                      Text(
+                        '${snapshot.data!.user.email}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Text(
+                        '+9700000000',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                      SizedBox(height: 10),
+                      FutureBuilder<FollowModel>(
+                        future: getFollowInfo(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text("Error: ${snapshot.error}"),
+                            );
+                          } else if (snapshot.hasData) {
+                            final data = snapshot.data!;
+                              return Row(
+                            children: [
+                              CustomFollowingWidgetButton(text: "followers ${data.followersCount}"),
+                              SizedBox(width: 10),
+                              CustomFollowingWidgetButton(text: "following ${data.followingCount}"),
+                            ],
+                          );
+                          } else {
+                            return const Text("No data found");
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                const Text(
-                  'example@gmail.com',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const Text(
-                  '+9700000000',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    _buildFollowInfo('Followers', '200'),
-                    const SizedBox(width: 10),
-                    _buildFollowInfo('Following', '100'),
-                  ],
+                InkWell(
+                  child: Icon(
+                    Icons.mode_edit_outlined,
+                    color: kLightPrimaryColor,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditProfileInfoView(userInfo: snapshot.data!.user),
+                      ),
+                    );
+                  },
                 ),
               ],
-            ),
+            );
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget CustomSlidableSocialLink(LinkElement link) {
+    return Slidable(
+      key: ValueKey(link.id),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.35,
+        children: [
+          const SizedBox(width: 8), // مسافة بسيطة بين الأزرار
+          // ✏️ تعديل
+          SlidableAction(
+            onPressed: (_) => editLink(link),
+            backgroundColor: kSecondaryColor,
+            foregroundColor: Colors.white,
+            icon: Icons.edit,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          const SizedBox(width: 8), // مسافة بسيطة بين الأزرار
+          // ❌ حذف
+          SlidableAction(
+            onPressed: (_) => deleteLink(link),
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            borderRadius: BorderRadius.circular(15),
           ),
         ],
       ),
-    );
-  }
-
-  // بناء معلومات المتابعة
-  Widget _buildFollowInfo(String label, String count) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFDD835), // اللون الأصفر
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Text(
-        '$label $count',
-        style: const TextStyle(
-          color: Colors.black87,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
+      child: CustomSocialLinkContent(
+        platform: link.title,
+        url: link.link,
+        color: kLightDangerColor!,
       ),
     );
   }
-  
-  // =======================================================
-  // دوال الروابط القابلة للتمرير (Slidable)
-  // =======================================================
 
-  // المحتوى الأساسي لبطاقة الرابط (يستخدم داخل Slidable)
-  Widget _buildSocialLinkContent({
+  Widget CustomSocialLinkContent({
     required String platform,
     required String url,
     required Color color,
   }) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: color,
@@ -187,7 +309,7 @@ class ProfileView extends StatelessWidget {
                 Text(
                   platform,
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    color: Colors.grey[800],
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -195,189 +317,13 @@ class ProfileView extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   url,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[700], fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // بناء عنصر Slidable Wrapper
-  Widget _buildSlidableSocialLink({
-    required String platform,
-    required String url,
-    required Color color,
-  }) {
-    return Slidable(
-      key: ValueKey(url), // مفتاح لكل عنصر Slidable
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        extentRatio: 0.35, // نسبة مساحة الأزرار الظاهرة
-        children: [
-          // 1. زر التعديل (الأصفر)
-          SlidableAction(
-            onPressed: (context) {
-              print('Edit pressed for $platform');
-            },
-            backgroundColor: const Color(0xFFFDD835), // الأصفر
-            foregroundColor: Colors.white,
-            icon: Icons.edit,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          // 2. زر الحذف (الأحمر)
-          SlidableAction(
-            onPressed: (context) {
-              print('Delete pressed for $platform');
-            },
-            backgroundColor: const Color(0xFFEF5350), // الأحمر
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ],
-      ),
-      // المحتوى الذي يظهر أولاً
-      child: _buildSocialLinkContent(
-        platform: platform,
-        url: url,
-        color: color,
-      ),
-    );
-  }
-}
-
-// =======================================================
-// 2. شاشة إضافة رابط (AddLinkScreen)
-// =======================================================
-
-class AddLinkScreen extends StatelessWidget {
-  final TextEditingController _titleController = TextEditingController(text: 'Snapchat');
-  final TextEditingController _linkController = TextEditingController(text: 'http://www.Example.com');
-
-  AddLinkScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF2B2B4F)),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text(
-          'Add Link',
-          style: TextStyle(
-            color: Color(0xFF2B2B4F),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // حقل العنوان
-            const Text(
-              'title',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2B2B4F),
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildInputField(_titleController),
-            
-            const SizedBox(height: 20),
-
-            // حقل الرابط
-            const Text(
-              'link',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2B2B4F),
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildInputField(_linkController, keyboardType: TextInputType.url),
-
-            const Spacer(),
-
-            // زر الإضافة
-            _buildAddButton(context),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // بناء حقل الإدخال
-  Widget _buildInputField(TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF2B2B4F), width: 1.5),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF2B2B4F), width: 1.5),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
-        ),
-      ),
-    );
-  }
-
-  // بناء زر الإضافة
-  Widget _buildAddButton(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
-        height: 50,
-        child: ElevatedButton(
-          onPressed: () {
-            print('Adding Link: ${_linkController.text}');
-            // هنا يمكنك إضافة منطق حفظ البيانات والعودة
-            Navigator.pop(context); 
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFDD835), // اللون الأصفر
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 2,
-          ),
-          child: const Text(
-            'ADD',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2B2B4F),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -5,6 +5,8 @@ const baseUrl = 'https://betweener.kicklance.com/api';
 const loginURL = '$baseUrl/login';
 const allLinksurl = '$baseUrl/links';
 const registerUrl = '$baseUrl/register';
+const followUrl = '$baseUrl/follow';
+const SearchUserByNameUrl = '$baseUrl/search';
 
 // ============= STYLE CONSTS ==============
 

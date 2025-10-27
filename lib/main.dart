@@ -2,6 +2,7 @@ import 'package:betweeener_app/views_features/auth/login_view.dart';
 import 'package:betweeener_app/views_features/auth/register_view.dart';
 import 'package:betweeener_app/views_features/home/home_view.dart';
 import 'package:betweeener_app/views_features/links/add_link_view.dart';
+import 'package:betweeener_app/views_features/links/edit_link_view.dart';
 import 'package:betweeener_app/views_features/loading/lodaing_screen.dart';
 import 'package:betweeener_app/views_features/main_app_view.dart';
 import 'package:betweeener_app/views_features/onboarding/onbording_view.dart';
@@ -45,6 +46,8 @@ class MyApp extends StatelessWidget {
         MainAppView.id: (context) => const MainAppView(),
         ProfileView.id: (context) => const ProfileView(),
         ReceiveView.id: (context) => const ReceiveView(),
+        ReceiveView.id: (context) => const ReceiveView(),
+        // EditLinkView.id: (context) =>  EditLinkView(link: {id}),
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:betweeener_app/controllers/auth_controller.dart';
 import 'package:betweeener_app/core/util/assets.dart';
+import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/views_features/auth/register_view.dart';
 import 'package:betweeener_app/views_features/home/home_view.dart';
@@ -25,23 +26,32 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  // TextField  يخزن النص اللي المستخدم بيكتبه داخل TextEditingController
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void submitLogin() {
+    // عند الضغط على زر تسجيل الدخول
+
     if (_formKey.currentState!.validate()) {
+      //(email و password مش فاضيين) يتأكد من صحة الإدخال
+
       final Map<String, dynamic> body = {
         'email': emailController.text,
         'password': passwordController.text,
       };
+      //post requestلحتى نحولها و نرسلها لل  bodyاسمها  map رح نحط المعلومات داخل
       login(body)
           .then((user) async {
+            // بعد ما يكون كلشي تمام وتمت عملية تسجيل الدخول
+            // رح يحفظ معلومات المستخدم اللي سجل دخولو لاستخدامو بالتطبيق
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString('user', userToJson(user));
             Navigator.pushReplacementNamed(context, MainAppView.id);
             // اذا كان كلشي تمام رح يروح على الصفحة الرئيسية
-           })
+          })
           .catchError((error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -53,10 +63,11 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-  // 2 point >>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kScaffoldColor,
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),

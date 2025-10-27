@@ -1,5 +1,6 @@
 import 'package:betweeener_app/controllers/auth_controller.dart';
 import 'package:betweeener_app/core/util/assets.dart';
+import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
 import 'package:betweeener_app/views_features/main_app_view.dart';
 import 'package:email_validator/email_validator.dart';
@@ -25,6 +26,7 @@ class _RegisterViewState extends State<RegisterView> {
   TextEditingController nameController = TextEditingController();
 
   TextEditingController emailController = TextEditingController();
+  // TextField  يخزن النص اللي المستخدم بيكتبه داخل TextEditingController  .
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController password_confirmationController =
@@ -33,7 +35,11 @@ class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
 
   void submitRegister() {
+    // عند الضغط على زر تسجيل حساب
     if (_formKey.currentState!.validate()) {
+            //  يتأكد من صحة الإدخال 
+         //post requestلحتى نحولها و نرسلها لل  bodyاسمها  map رح نحط المعلومات داخل 
+
       final Map<String, dynamic> body = {
         'name': nameController.text,
         'email': emailController.text,
@@ -41,6 +47,7 @@ class _RegisterViewState extends State<RegisterView> {
         'password_confirmation': password_confirmationController.text,
       };
       register(body)
+      // الدالة اللي رح ترسل الطلب إلى السيرفر
           .then((user) async {
             Navigator.pushReplacementNamed(context, LoginView.id);
             // اذا كان كلشي تمام رح يروح على صفحة تسجيل الدخول
@@ -59,6 +66,8 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            backgroundColor: kScaffoldColor,
+
       appBar: AppBar(
         title: const Text("Register"),
         leading: IconButton(

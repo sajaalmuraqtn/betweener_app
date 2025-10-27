@@ -1,45 +1,55 @@
+import 'dart:io';
+
 import 'package:betweeener_app/controllers/link_controller.dart';
 import 'package:betweeener_app/core/util/constants.dart';
+import 'package:betweeener_app/models/link_response_model.dart';
 import 'package:betweeener_app/views_features/main_app_view.dart';
 import 'package:betweeener_app/views_features/widgets/custom_text_form_field.dart';
 import 'package:betweeener_app/views_features/widgets/primary_outlined_button_widget.dart';
 import 'package:betweeener_app/views_features/widgets/secondary_button_widget.dart';
 import 'package:flutter/material.dart';
 
-class AddLinkView extends StatefulWidget {
-  static const id = '/addLink';
-  AddLinkView({super.key});
+class EditLinkView extends StatefulWidget {
+  static const id = '/editLink';
+  EditLinkView({super.key, required this.link});
+
+  final LinkElement link; // 🔹 تأكد من final
 
   @override
-  State<AddLinkView> createState() => _AddLinkViewState();
+  State<EditLinkView> createState() => _EditLinkViewState();
 }
 
-class _AddLinkViewState extends State<AddLinkView> {
-  final TextEditingController titleController = TextEditingController();
-
-  final TextEditingController linkController = TextEditingController();
+class _EditLinkViewState extends State<EditLinkView> {
+  late TextEditingController titleController;
+  late TextEditingController linkController;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  void _addLink() {
+  @override
+  void initState() {
+    super.initState();
+    // 🔹 تهيئة الحقول بالقيم الأصلية
+    titleController = TextEditingController(text: widget.link.title);
+    linkController = TextEditingController(text: widget.link.link);
+  }
+
+  void _EditLink() {
     if (formKey.currentState!.validate()) {
-      addUserLink({
+      editUserLink({
         'title': titleController.text,
         'link': linkController.text,
-      }).then((isAdded) {
-        if (isAdded) {
-
+      }, widget.link.id).then((isEdited) {
+        if (isEdited) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Link added successfully'),
+            const SnackBar(
+              content: Text('Link Edited successfully'),
               backgroundColor: Colors.green,
             ),
           );
-         Navigator.pop(context, true);
+          // إعادة النتيجة للشاشة السابقة لتحديث القائمة
+          Navigator.pop(context);
         }
       });
-      //data ( emailcontrller , linkcontroller)
-      //http method >> post
     }
   }
 
@@ -47,8 +57,8 @@ class _AddLinkViewState extends State<AddLinkView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kScaffoldColor,
-      appBar: AppBar(title: Text('Add Link'),
-       ),
+
+      appBar: AppBar(title: const Text('Edit Link')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Form(
@@ -59,7 +69,7 @@ class _AddLinkViewState extends State<AddLinkView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CustomTextFormField(
-                  label: 'ttile',
+                  label: 'Title',
                   hint: 'snapshout',
                   controller: titleController,
                   validator: (title) {
@@ -70,24 +80,21 @@ class _AddLinkViewState extends State<AddLinkView> {
                   },
                 ),
                 CustomTextFormField(
-                  label: 'link',
+                  label: 'Link',
                   hint: 'http://example.com',
                   controller: linkController,
                   validator: (link) {
                     if (link == null || link.isEmpty) {
                       return 'please enter the link';
                     }
-                    if (!link.contains(".com") ) {
-                      print("$link ${link.contains(".com")}");
+                    if (!link.contains(".com")) {
                       return 'please enter valid link';
                     }
                     return null;
                   },
                 ),
-            
-                SizedBox(height: 50),
-            
-                SecondaryButtonWidget(onTap: _addLink, text: 'ADD',width: 200),
+                const SizedBox(height: 50),
+                SecondaryButtonWidget(onTap: _EditLink, text: 'SAVE',width: 200),
               ],
             ),
           ),

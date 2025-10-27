@@ -4,6 +4,7 @@ import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/link_response_model.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
+import 'package:betweeener_app/views_features/search/search_view.dart';
 import 'package:betweeener_app/views_features/widgets/custom_social_button.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -22,15 +23,12 @@ class _HomeViewState extends State<HomeView> {
   List<LinkElement> links = [];
   @override
   void initState() {
-    allLinks(); 
+    allLinks();
     super.initState();
   }
 
-  final String qrData = "https://example.com"; // ضع رابطك هنا
-
   Future<List<LinkElement>> allLinks() async {
     links = await getUserLinks(); //api
-    print("links -> $links");
     return links;
   }
 
@@ -39,11 +37,11 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: kScaffoldColor,
       appBar: AppBar(
-         elevation: 0,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchByNameView()));},
           ),
           IconButton(
             icon: Icon(Icons.fullscreen, color: Colors.black),
@@ -98,11 +96,22 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                     ),
-                    QrImageView(
-                      data: qrData,
-                      version: QrVersions.auto,
-                      size: 250,
-                      foregroundColor: kPrimaryColor,
+                    FutureBuilder(
+                      future: getCurrentUser(context),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return QrImageView(
+                            data: "${snapshot.data!.user.email}",
+                            version: QrVersions.auto,
+                            size: 250,
+                            foregroundColor: kPrimaryColor,
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(snapshot.error.toString());
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -120,49 +129,48 @@ class _HomeViewState extends State<HomeView> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   }
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        margin: EdgeInsets.all(10),
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: kLightPrimaryColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TextButton(
-                          onPressed: () async {
-                            final isAdded = await Navigator.pushNamed(
-                              context,
-                              '/addLink',
-                            );
-                            if (isAdded == true) {
-                              setState(() {
-                                allLinks(); // إعادة تحميل الروابط
-                              });
-                            }
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Icon(Icons.add, color: kPrimaryColor, size: 30),
-                              Text(
-                                'Add Link',
-                                style: TextStyle(color: kPrimaryColor),
-                              ),
-                            ],
+                  if (snapshot.hasData) {
+                    final data = snapshot.data!;
+                    if (data.length==0) {
+                      return Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          margin: EdgeInsets.all(10),
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: kLightPrimaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              final isAdded = await Navigator.pushNamed(
+                                context,
+                                '/addLink',
+                              );
+                              if (isAdded == true) {
+                                setState(() {
+                                  allLinks(); // إعادة تحميل الروابط
+                                });
+                              }
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(Icons.add, color: kPrimaryColor, size: 30),
+                                Text(
+                                  'Add Link',
+                                  style: TextStyle(color: kPrimaryColor),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  } else if (snapshot.hasData) {
-                    final data = snapshot.data!;
-                    print("data--> $data");
-
+                      );
+                    }
                     // حالة وجود عناصر
                     return SizedBox(
                       height: 130,
@@ -224,10 +232,9 @@ class _HomeViewState extends State<HomeView> {
                     );
                   } else if (snapshot.hasError) {
                     return Center(child: Text('${snapshot.error}'));
+                  } else {
+                    return Center(child: CircularProgressIndicator());
                   }
-                 else{
-                   return Center(child: CircularProgressIndicator());
-                   }
                 },
               ),
               SizedBox(height: 30),
