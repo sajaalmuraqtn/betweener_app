@@ -9,9 +9,11 @@ import 'package:betweeener_app/views_features/widgets/custom_profile_avater_widg
 import 'package:flutter/material.dart';
 
 class FriendProfileView extends StatefulWidget {
-  const FriendProfileView({super.key, required this.user});
+  const FriendProfileView({super.key, required this.name, required this.email, required this.userId});
   static String id = '/profileView';
-  final UserClass user;
+  final String name;
+  final String email;
+  final int? userId;
 
   @override
   State<FriendProfileView> createState() => _FriendProfileViewState();
@@ -22,11 +24,10 @@ class _FriendProfileViewState extends State<FriendProfileView> {
   bool? isFollowed; // nullable => لنعرف متى تم تحميلها
 
   Future<void> _isFollowedUserBefore() async {
-    bool followed = await isFollowedUserBefore(widget.user.id!);
+    bool followed = await isFollowedUserBefore(widget.userId!);
     setState(() {
       isFollowed = followed;
     });
-    print("isFollowed -> $isFollowed");
   }
 
   @override
@@ -41,7 +42,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
       backgroundColor: kScaffoldColor,
       appBar: AppBar(
         title: Text(
-          "${widget.user.name} Profile",
+          "${widget.name} Profile",
           style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -57,14 +58,24 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                   CustomProfileCard(),
                   const SizedBox(height: 20),
                   CustomSocialLinkContent(
-                    url: "instagram.com",
+                    url: "instagram.com/${widget.name}",
                     platform: "instagram",
+                    color: const Color.fromARGB(255, 237, 143, 160),
+                  ),
+                  CustomSocialLinkContent(
+                    url: "facebook.com/${widget.name}",
+                    platform: "facebook",
+                    color: const Color.fromARGB(255, 132, 212, 255),
+                  ),
+                  CustomSocialLinkContent(
+                    url: "x.com/${widget.name}",
+                    platform: "facebook",
                     color: kLightDangerColor,
                   ),
                   CustomSocialLinkContent(
-                    url: "facebook.com",
-                    platform: "facebook",
-                    color: kLightDangerColor,
+                    url: "snapchat.com/${widget.name}",
+                    platform: "snapchat",
+                    color: const Color.fromARGB(129, 255, 250, 104),
                   ),
                 ],
               ),
@@ -96,7 +107,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${widget.user.name}',
+                  '${widget.name}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -104,7 +115,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                   ),
                 ),
                 Text(
-                  '${widget.user.email}',
+                  '${widget.email}',
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
                 const Text(
@@ -117,7 +128,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                   onTap: isFollowed!
                       ? null
                       : () async {
-                          await addFollow(widget.user.id!);
+                          await addFollow(widget.userId!);
                           setState(() {
                             isFollowed = true;
                           });

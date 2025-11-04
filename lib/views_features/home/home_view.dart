@@ -20,20 +20,23 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<LinkElement> links = [];
-  @override
-  void initState() {
-    allLinks();
-    super.initState();
-  }
+  List<LinkElement> links = []; 
 
   Future<List<LinkElement>> allLinks() async {
     links = await getUserLinks(); //api
     return links;
   }
+    @override
+  void initState() {
+    super.initState();
+    allLinks();
+    UpdateUserLocation(context);
+  }
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       backgroundColor: kScaffoldColor,
       appBar: AppBar(

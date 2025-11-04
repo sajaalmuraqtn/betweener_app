@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/user.dart';
+import 'package:betweeener_app/models/user_location.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,33 @@ Future<User> getCurrentUser(BuildContext context) async {
   }
 
   return Future.error("not found");
+}
+
+
+Future<void> UpdateUserLocation(BuildContext context) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  if (!prefs.containsKey('user')) {
+    return Future.error("User not found");
+  }
+
+  final user = userFromJson(prefs.getString('user')!);
+        UserLocation userLocation = UserLocation();
+    await userLocation.getUserLocation(context);
+  final response = await http.post(
+    Uri.parse("${updateUserLocationUrl}/${user.user.id}"),
+    headers: {'Authorization': 'Bearer ${user.token}'},
+    body: {
+      "lat":"${userLocation.latitude}",
+      "long":"${userLocation.longitude}"
+    }
+  );
+   
+  if (response.statusCode == 200) {
+    print("userdata->${response.body}");
+  } else {
+    return Future.error("Failed to get links (status ${response.statusCode})");
+  }
 }
 
 

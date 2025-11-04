@@ -29,8 +29,7 @@ class _SearchByNameViewState extends State<SearchByNameView> {
       final result = await searchUserByName({'name': name});
       setState(() {
         foundUsers = result;
-        print("foundUsers->$foundUsers");
-      });
+       });
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -161,11 +160,10 @@ class _SearchByNameViewState extends State<SearchByNameView> {
           color: kPrimaryColor,
         ),
         onTap: () {
-          print("${user.email}");
-          Navigator.push(
+           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => FriendProfileView(user: user),
+              builder: (context) => FriendProfileView(email:user.email!,name:user.name!,userId: user.id),
             ),
           );
           // الانتقال إلى صفحة البروفايل

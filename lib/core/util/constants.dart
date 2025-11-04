@@ -7,6 +7,8 @@ const allLinksurl = '$baseUrl/links';
 const registerUrl = '$baseUrl/register';
 const followUrl = '$baseUrl/follow';
 const SearchUserByNameUrl = '$baseUrl/search';
+const updateUserLocationUrl = '$baseUrl/update';
+
 
 // ============= STYLE CONSTS ==============
 

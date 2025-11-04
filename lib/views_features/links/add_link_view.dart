@@ -9,18 +9,21 @@ import 'package:flutter/material.dart';
 class AddLinkView extends StatefulWidget {
   static const id = '/addLink';
   AddLinkView({super.key});
-
+   
   @override
   State<AddLinkView> createState() => _AddLinkViewState();
 }
 
 class _AddLinkViewState extends State<AddLinkView> {
+
+  @override
+  Widget build(BuildContext context) {
+  BuildContext superContext = ModalRoute.of(context)!.settings.arguments as BuildContext;
   final TextEditingController titleController = TextEditingController();
 
   final TextEditingController linkController = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   void _addLink() {
     if (formKey.currentState!.validate()) {
       addUserLink({
@@ -29,7 +32,7 @@ class _AddLinkViewState extends State<AddLinkView> {
       }).then((isAdded) {
         if (isAdded) {
 
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(superContext).showSnackBar(
             SnackBar(
               content: Text('Link added successfully'),
               backgroundColor: Colors.green,
@@ -43,8 +46,6 @@ class _AddLinkViewState extends State<AddLinkView> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kScaffoldColor,
       appBar: AppBar(title: Text('Add Link'),
@@ -78,8 +79,7 @@ class _AddLinkViewState extends State<AddLinkView> {
                       return 'please enter the link';
                     }
                     if (!link.contains(".com") ) {
-                      print("$link ${link.contains(".com")}");
-                      return 'please enter valid link';
+                       return 'please enter valid link';
                     }
                     return null;
                   },
