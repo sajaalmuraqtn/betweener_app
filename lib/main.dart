@@ -9,7 +9,6 @@ import 'package:betweeener_app/views_features/onboarding/onbording_view.dart';
 import 'package:betweeener_app/views_features/profile/profile_view.dart';
 import 'package:betweeener_app/views_features/recieve/receive_view.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'core/util/constants.dart';
 
 void main() async {
@@ -39,6 +38,7 @@ class MyApp extends StatelessWidget {
       home: const LoadingScreen(),
       routes: {
         AddLinkView.id: (context) => AddLinkView(),
+        EditLinkView.id: (context) => EditLinkView(),
         LoadingScreen.id: (context) => const LoadingScreen(),
         LoginView.id: (context) => const LoginView(),
         RegisterView.id: (context) => const RegisterView(),

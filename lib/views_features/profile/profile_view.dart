@@ -6,10 +6,10 @@ import 'package:betweeener_app/models/follow_model.dart';
 import 'package:betweeener_app/models/link_response_model.dart';
 import 'package:betweeener_app/views_features/links/add_link_view.dart';
 import 'package:betweeener_app/views_features/links/edit_link_view.dart';
-import 'package:betweeener_app/views_features/onboarding/onbording_view.dart';
 import 'package:betweeener_app/views_features/profile/editprofile_view.dart';
 import 'package:betweeener_app/views_features/profile/followelistView.dart';
 import 'package:betweeener_app/views_features/widgets/custom_following_widget_button.dart';
+import 'package:betweeener_app/views_features/widgets/custom_loading.dart';
 import 'package:betweeener_app/views_features/widgets/custom_profile_avater_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -17,7 +17,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
   static String id = '/profileView';
-   
+    
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -43,9 +43,8 @@ class _ProfileViewState extends State<ProfileView> {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to load links')));
+      SnackBarShowMessage(message:'Failed to load links',color: Colors.red,context: context);
+
     }
   }
 
@@ -55,13 +54,8 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() {
       getLinks();
     });
+      SnackBarShowMessage(message:'Link Deleted successfully',color: Colors.green,context: context);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Link Deleted successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
   }
 
   void editLink(LinkElement oldLink) async {
@@ -77,12 +71,8 @@ class _ProfileViewState extends State<ProfileView> {
           getLinks();
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Link Updated successfully'),
-            backgroundColor: Colors.blue,
-          ),
-        );
+        SnackBarShowMessage(message:'Link Updated successfully',color: Colors.green,context: context);
+
       }
     }
   }
@@ -107,7 +97,7 @@ class _ProfileViewState extends State<ProfileView> {
             CustomProfileCard(),
             const SizedBox(height: 20),
             isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? CustomLoading()
                 : links.isEmpty
                 ? const Center(child: Text("No Links"))
                 : ListView.builder(
@@ -134,14 +124,7 @@ class _ProfileViewState extends State<ProfileView> {
             if (newLink != null && newLink is LinkElement) {
               setState(() {
                 links.add(newLink);
-              });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Link Added successfully'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              }); 
             }
           },
           backgroundColor: kPrimaryColor,
@@ -204,27 +187,24 @@ class _ProfileViewState extends State<ProfileView> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                            return CustomLoading();
                           } else if (snapshot.hasError) {
                             return Center(
                               child: Text("Error: ${snapshot.error}"),
                             );
                           } else if (snapshot.hasData) {
                             final data = snapshot.data!;
- 
                               return Row(
-                            children: [
-                              CustomFollowingWidgetButton(text: "followers ${data.followersCount}",onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.followers,title: "Following List",)));
-                              },),
-                              SizedBox(width: 10),
-                              CustomFollowingWidgetButton(text: "following ${data.followingCount}",onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.following,title: "Followers List",)));
-                              },),
-                            ],
-                          );
+                                children: [
+                                  CustomFollowingWidgetButton(text: "followers ${data.followersCount}",onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.followers,title: "Following List",)));
+                                  },),
+                                  SizedBox(width: 10),
+                                  CustomFollowingWidgetButton(text: "following ${data.followingCount}",onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.following,title: "Followers List",)));
+                                  },),
+                                ],
+                              );
                           } else {
                             return const Text("No data found");
                           }
@@ -253,68 +233,61 @@ class _ProfileViewState extends State<ProfileView> {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else {
-            return const CircularProgressIndicator();
+            return const CustomLoading();
           }
         },
       ),
     );
   }
 
-// (هذه الدالة داخل الكلاس _ProfileViewState)
-
-Widget CustomSlidableSocialLink(LinkElement link) {
-  // هنا نقوم بوضع الـ Container الذي يمثل بطاقة الرابط داخل Slidable
-  // لكي نترك مساحة كافية لأزرار الـ SlidableAction لتظهر بوضوح بجانبها
-  return Container(
-    margin: const EdgeInsets.only(bottom: 10), // المسافة بين الروابط
-    child: Slidable(
-      key: ValueKey(link.id),
-      // هذا النوع من ActionPane يتيح لك وضع أي Widgets ترغب بها كأزرار
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        // لتقليل عرض المساحة المخصصة للأزرار
-        extentRatio: 0.35, // نسبة أقل لجعل الأزرار تبدو منفصلة
-        children: [
-          // 1. زر التعديل (الأصفر)
-          InkWell(
-            onTap: () => editLink(link),
-            child: Container(
-              width: 60, // تحديد عرض ثابت لجعله مربعاً
-              height: 60, // تحديد ارتفاع ثابت لجعله مربعاً
-              decoration: BoxDecoration(
-                color: kSecondaryColor, // اللون الأصفر
-                borderRadius: BorderRadius.circular(15), // حواف مستديرة
+  Widget CustomSlidableSocialLink(LinkElement link) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Slidable(
+        key: ValueKey(link.id),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.35, 
+          children: [
+            
+            InkWell(
+              onTap: () => editLink(link),
+              child: Container(
+                width: 60, 
+                height: 60, 
+                decoration: BoxDecoration(
+                  color: kSecondaryColor,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                child: const Icon(Icons.edit, color: Colors.white, size: 24),
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 5), // مسافة بين الأزرار
-              child: const Icon(Icons.edit, color: Colors.white, size: 24),
             ),
-          ),
-          // 2. زر الحذف (الأحمر)
-          InkWell(
-            onTap: () => deleteLink(link),
-            child: Container(
-              width: 60, // تحديد عرض ثابت لجعله مربعاً
-              height: 60, // تحديد ارتفاع ثابت لجعله مربعاً
-              decoration: BoxDecoration(
-                color: Colors.red[400], // لون أحمر مشابه للتصميم
-                borderRadius: BorderRadius.circular(15), // حواف مستديرة
+            
+            InkWell(
+              onTap: () => deleteLink(link),
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.red[400],
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(Icons.delete, color: Colors.white, size: 24),
               ),
-              child: const Icon(Icons.delete, color: Colors.white, size: 24),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
 
-      // المحتوى الأساسي لبطاقة الرابط
-      child: CustomSocialLinkContent(
-        platform: link.title,
-        url: link.link,
-        // استخدم لون الـ link.color اذا كان متوفراً، أو لون افتراضي
-        color: kLightDangerColor ?? Colors.deepPurple[100]!, 
+        
+        child: CustomSocialLinkContent(
+          platform: link.title,
+          url: link.link,
+          color: kLightDangerColor ?? Colors.deepPurple[100]!, 
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget CustomSocialLinkContent({
     required String platform,

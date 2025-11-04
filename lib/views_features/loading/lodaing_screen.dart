@@ -1,5 +1,6 @@
 import 'package:betweeener_app/views_features/auth/login_view.dart';
 import 'package:betweeener_app/views_features/main_app_view.dart';
+import 'package:betweeener_app/views_features/widgets/custom_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +31,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(body: CustomLoading());
   }
 }

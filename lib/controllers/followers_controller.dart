@@ -42,16 +42,13 @@ Future<bool> isFollowedUserBefore(int id) async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> jsonMap = jsonDecode(response.body);
 
-    // ✅ التأكد أن الرد يحتوي على قائمة following
-    final List<dynamic> followingList = jsonMap["following"] ?? [];
+     final List<dynamic> followingList = jsonMap["following"] ?? [];
 
-    // ✅ تحويل القائمة إلى كائنات UserClass
-    final List<UserClass> followingUsers =
+     final List<UserClass> followingUsers =
         followingList.map((u) => UserClass.fromJson(u)).toList();
 
-    // ✅ البحث إذا كان id المستخدم موجود ضمنهم
+    //   البحث إذا كان المستخدم موجود ضمنهم
     final bool isFollowed = followingUsers.any((u) => u.id == id);
-     print("response ------>>>>> $isFollowed");
     return isFollowed;
 
   } else {
@@ -76,8 +73,7 @@ Future<FollowModel> getFollowInfo() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
 
-    // ✅ تحليل الاستجابة إلى FollowModel
-    return FollowModel.fromJson(data);
+     return FollowModel.fromJson(data);
   } else {
     return Future.error(
       "Failed to get follow info (status ${response.statusCode})",

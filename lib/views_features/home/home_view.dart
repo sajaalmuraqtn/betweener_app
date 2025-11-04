@@ -5,6 +5,7 @@ import 'package:betweeener_app/models/link_response_model.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
 import 'package:betweeener_app/views_features/search/search_view.dart';
+import 'package:betweeener_app/views_features/widgets/custom_loading.dart';
 import 'package:betweeener_app/views_features/widgets/custom_social_button.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -77,7 +78,7 @@ class _HomeViewState extends State<HomeView> {
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
                   } else {
-                    return CircularProgressIndicator();
+                    return CustomLoading();
                   }
                 },
               ),
@@ -112,7 +113,7 @@ class _HomeViewState extends State<HomeView> {
                         } else if (snapshot.hasError) {
                           return Text(snapshot.error.toString());
                         } else {
-                          return CircularProgressIndicator();
+                          return CustomLoading();
                         }
                       },
                     ),
@@ -130,7 +131,7 @@ class _HomeViewState extends State<HomeView> {
                 future: allLinks(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return CustomLoading();
                   }
                   if (snapshot.hasData) {
                     final data = snapshot.data!;
@@ -236,7 +237,7 @@ class _HomeViewState extends State<HomeView> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('${snapshot.error}'));
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return CustomLoading();
                   }
                 },
               ),

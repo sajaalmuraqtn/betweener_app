@@ -5,6 +5,7 @@ import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/link_response_model.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/views_features/widgets/custom_following_widget_button.dart';
+import 'package:betweeener_app/views_features/widgets/custom_loading.dart';
 import 'package:betweeener_app/views_features/widgets/custom_profile_avater_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
         elevation: 0,
       ),
       body: isFollowed == null
-          ? const Center(child: CircularProgressIndicator()) // تحميل البيانات
+          ? CustomLoading() // تحميل البيانات
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -132,12 +133,7 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                           setState(() {
                             isFollowed = true;
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("You are now following this user"),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
+                         SnackBarShowMessage(context: context, color: Colors.green, message: 'You are now following this user');
                         },
                 ),
               ],

@@ -38,21 +38,7 @@ class _EditProfileInfoViewState extends State<EditProfileInfoView> {
 
   void _EditProfileInfo() {
     if (formKey.currentState!.validate()) {
-      // editUserLink({
-      //   'title': nameController.text,
-      //   'link': emailController.text,
-      // }, widget.link.id).then((isEdited) {
-      //   if (isEdited) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text('Link Edited successfully'),
-      //         backgroundColor: Colors.green,
-      //       ),
-      //     );
-      //     // إعادة النتيجة للشاشة السابقة لتحديث القائمة
-      //     Navigator.pop(context);
-      //   }
-      // });
+ 
     }
   }
 

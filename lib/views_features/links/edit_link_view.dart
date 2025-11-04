@@ -11,9 +11,10 @@ import 'package:flutter/material.dart';
 
 class EditLinkView extends StatefulWidget {
   static const id = '/editLink';
-  EditLinkView({super.key, required this.link});
+  EditLinkView({super.key, this.link, this.superContext});
+  BuildContext? superContext;
 
-  final LinkElement link; // 🔹 تأكد من final
+  LinkElement? link; // 🔹 تأكد من final
 
   @override
   State<EditLinkView> createState() => _EditLinkViewState();
@@ -28,9 +29,8 @@ class _EditLinkViewState extends State<EditLinkView> {
   @override
   void initState() {
     super.initState();
-    // 🔹 تهيئة الحقول بالقيم الأصلية
-    titleController = TextEditingController(text: widget.link.title);
-    linkController = TextEditingController(text: widget.link.link);
+    titleController = TextEditingController(text: widget.link?.title);
+    linkController = TextEditingController(text: widget.link?.link);
   }
 
   void _EditLink() {
@@ -38,15 +38,8 @@ class _EditLinkViewState extends State<EditLinkView> {
       editUserLink({
         'title': titleController.text,
         'link': linkController.text,
-      }, widget.link.id).then((isEdited) {
+      }, widget.link!.id).then((isEdited) {
         if (isEdited) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Link Edited successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          // إعادة النتيجة للشاشة السابقة لتحديث القائمة
           Navigator.pop(context);
         }
       });
@@ -94,7 +87,11 @@ class _EditLinkViewState extends State<EditLinkView> {
                   },
                 ),
                 const SizedBox(height: 50),
-                SecondaryButtonWidget(onTap: _EditLink, text: 'SAVE',width: 200),
+                SecondaryButtonWidget(
+                  onTap: _EditLink,
+                  text: 'SAVE',
+                  width: 200,
+                ),
               ],
             ),
           ),

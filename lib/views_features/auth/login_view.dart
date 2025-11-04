@@ -1,4 +1,5 @@
 import 'package:betweeener_app/controllers/auth_controller.dart';
+import 'package:betweeener_app/controllers/user_controller.dart';
 import 'package:betweeener_app/core/util/assets.dart';
 import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/user.dart';
@@ -53,11 +54,10 @@ class _LoginViewState extends State<LoginView> {
             // اذا كان كلشي تمام رح يروح على الصفحة الرئيسية
           })
           .catchError((error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.toString()),
-                backgroundColor: Colors.red,
-              ),
+            SnackBarShowMessage(
+              message: error.toString(),
+              color: Colors.red,
+              context: context,
             );
           });
     }

@@ -3,6 +3,7 @@ import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/core/util/styles.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/views_features/profile/frindprofile_view.dart';
+import 'package:betweeener_app/views_features/widgets/custom_loading.dart';
 import 'package:flutter/material.dart';
 
 class SearchByNameView extends StatefulWidget {
@@ -111,7 +112,7 @@ class _SearchByNameViewState extends State<SearchByNameView> {
           // نتائج البحث
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? CustomLoading()
                 : foundUsers.isEmpty
                 ? const Center(child: Text("No users found"))
                 : ListView.builder(

@@ -1,4 +1,5 @@
 import 'package:betweeener_app/controllers/auth_controller.dart';
+import 'package:betweeener_app/controllers/user_controller.dart';
 import 'package:betweeener_app/core/util/assets.dart';
 import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
@@ -53,11 +54,10 @@ class _RegisterViewState extends State<RegisterView> {
             // اذا كان كلشي تمام رح يروح على صفحة تسجيل الدخول
           })
           .catchError((error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.toString()),
-                backgroundColor: Colors.red,
-              ),
+           SnackBarShowMessage(
+              message: error.toString(),
+              color: Colors.red,
+              context: context,
             );
           });
     }

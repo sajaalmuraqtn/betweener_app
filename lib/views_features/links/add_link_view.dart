@@ -1,4 +1,5 @@
 import 'package:betweeener_app/controllers/link_controller.dart';
+import 'package:betweeener_app/controllers/user_controller.dart';
 import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/views_features/main_app_view.dart';
 import 'package:betweeener_app/views_features/widgets/custom_text_form_field.dart';
@@ -15,10 +16,6 @@ class AddLinkView extends StatefulWidget {
 }
 
 class _AddLinkViewState extends State<AddLinkView> {
-
-  @override
-  Widget build(BuildContext context) {
-  BuildContext superContext = ModalRoute.of(context)!.settings.arguments as BuildContext;
   final TextEditingController titleController = TextEditingController();
 
   final TextEditingController linkController = TextEditingController();
@@ -32,12 +29,7 @@ class _AddLinkViewState extends State<AddLinkView> {
       }).then((isAdded) {
         if (isAdded) {
 
-          ScaffoldMessenger.of(superContext).showSnackBar(
-            SnackBar(
-              content: Text('Link added successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
+         SnackBarShowMessage(message: 'Link added successfully',color:  Colors.green,context: context);
          Navigator.pop(context, true);
         }
       });
@@ -46,6 +38,8 @@ class _AddLinkViewState extends State<AddLinkView> {
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kScaffoldColor,
       appBar: AppBar(title: Text('Add Link'),

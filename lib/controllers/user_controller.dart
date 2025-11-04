@@ -4,6 +4,7 @@ import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/models/user.dart';
 import 'package:betweeener_app/models/user_location.dart';
 import 'package:betweeener_app/views_features/auth/login_view.dart';
+import 'package:betweeener_app/views_features/onboarding/onbording_view.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -16,7 +17,7 @@ Future<User> getCurrentUser(BuildContext context) async {
   if (prefs.containsKey('user'))
     return userFromJson(prefs.getString('user')!);
   else {
-    Navigator.pushReplacementNamed(context, LoginView.id);
+    Navigator.pushReplacementNamed(context, OnBoardingView.id);
   }
 
   return Future.error("not found");
@@ -43,8 +44,7 @@ Future<void> UpdateUserLocation(BuildContext context) async {
   );
    
   if (response.statusCode == 200) {
-    print("userdata->${response.body}");
-  } else {
+   } else {
     return Future.error("Failed to get links (status ${response.statusCode})");
   }
 }
@@ -68,8 +68,7 @@ Future<List<UserClass>> searchUserByName(Map<String, dynamic> searchdata) async 
   if (response.statusCode == 200) {
     final Map<String, dynamic> usersFoundMap = jsonDecode(response.body);
     final dynamic usersData = usersFoundMap["user"];
-    print("userdata->${usersFoundMap}");
-
+ 
     // ✅ إذا رجع السيرفر كائن واحد فقط
     if (usersData is Map<String, dynamic>) {
       return [UserClass.fromJson(usersData)];
@@ -85,3 +84,12 @@ Future<List<UserClass>> searchUserByName(Map<String, dynamic> searchdata) async 
   }
 }
 
+
+void SnackBarShowMessage({required BuildContext context,required Color color,required String message}){
+   ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+               content: Text(message),
+               backgroundColor: color,
+            ),
+          );
+}
