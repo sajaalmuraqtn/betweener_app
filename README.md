@@ -1,4 +1,4 @@
-# 🌐 Betweener App - Flutter
+#  Betweener App - Flutter
 
 **Betweener App** is a modern social networking and link-sharing Flutter application.  
 It allows users to create personal profiles, share custom links, connect with others, and explore new users easily.  
@@ -58,3 +58,4 @@ Built using **Flutter** with a clean architecture and intuitive user experience.
 ## 📷 Screens 
 
 ![ScreenView](assets/screens.png)  
+
