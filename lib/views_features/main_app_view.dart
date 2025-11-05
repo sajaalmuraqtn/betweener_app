@@ -27,20 +27,16 @@ class _MainAppViewState extends State<MainAppView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         backgroundColor: kScaffoldColor,
-
+      backgroundColor: kScaffoldColor,
       body: screensList[_currentIndex],
       extendBody: true,
-       bottomNavigationBar: Padding(
-        padding:   EdgeInsets.only(top: 30.0),
-        child: CustomFloatingNavBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
+      bottomNavigationBar: CustomFloatingNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }

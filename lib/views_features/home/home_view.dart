@@ -122,12 +122,12 @@ class _HomeViewState extends State<HomeView> {
                   ],
                 ),
               ),
-              SizedBox(height: 100),
+              SizedBox(height: 50),
 
               Center(
                 child: Container(color: kPrimaryColor, height: 5, width: 250),
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 10),
 
               FutureBuilder(
                 future: allLinks(),

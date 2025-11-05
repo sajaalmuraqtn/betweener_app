@@ -69,8 +69,8 @@ class _FriendProfileViewState extends State<FriendProfileView> {
                     color: const Color.fromARGB(255, 132, 212, 255),
                   ),
                   CustomSocialLinkContent(
-                    url: "x.com/${widget.name}",
-                    platform: "facebook",
+                    url: "twitter.com/${widget.name}",
+                    platform: "twitter",
                     color: kLightDangerColor,
                   ),
                   CustomSocialLinkContent(

@@ -32,9 +32,8 @@ class FollowlistView extends StatelessWidget {
       ),
       body: Column(
         children: [
-   
-          // نتائج البحث
-          Expanded(
+          SizedBox(height: 30,),
+           Expanded(
             child:   followelist.isEmpty
                 ? const Center(child: Text("No users found"))
                 : ListView.builder(
