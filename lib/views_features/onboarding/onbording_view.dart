@@ -14,6 +14,8 @@ class OnBoardingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            backgroundColor: kScaffoldColor,
+
       body: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
@@ -34,7 +36,7 @@ class OnBoardingView extends StatelessWidget {
               text: 'Get Started',
               width: double.infinity,
               onTap: () {
-                Navigator.pushNamed(context, LoginView.id);
+                Navigator.pushReplacementNamed(context, LoginView.id);
               },
             ),
             const Spacer(),

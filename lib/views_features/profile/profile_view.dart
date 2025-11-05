@@ -17,7 +17,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
   static String id = '/profileView';
-    
+
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -43,8 +43,11 @@ class _ProfileViewState extends State<ProfileView> {
       setState(() {
         isLoading = false;
       });
-      SnackBarShowMessage(message:'Failed to load links',color: Colors.red,context: context);
-
+      SnackBarShowMessage(
+        message: 'Failed to load links',
+        color: Colors.red,
+        context: context,
+      );
     }
   }
 
@@ -54,8 +57,24 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() {
       getLinks();
     });
-      SnackBarShowMessage(message:'Link Deleted successfully',color: Colors.green,context: context);
+    SnackBarShowMessage(
+      message: 'Link Deleted successfully',
+      color: Colors.green,
+      context: context,
+    );
+  }
 
+  void addLink() async {
+    final newLink = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => AddLinkView()),
+    );
+ 
+     if (newLink) {
+      setState(() {
+        getLinks();
+      });
+    }
   }
 
   void editLink(LinkElement oldLink) async {
@@ -64,15 +83,17 @@ class _ProfileViewState extends State<ProfileView> {
       MaterialPageRoute(builder: (_) => EditLinkView(link: oldLink)),
     );
 
-    if (result != null && result is LinkElement) {
+    if (result) {
       int index = links.indexWhere((l) => l.id == oldLink.id);
       if (index != -1) {
         setState(() {
           getLinks();
         });
-
-        SnackBarShowMessage(message:'Link Updated successfully',color: Colors.green,context: context);
-
+        SnackBarShowMessage(
+          message: 'Link Updated successfully',
+          color: Colors.green,
+          context: context,
+        );
       }
     }
   }
@@ -116,16 +137,7 @@ class _ProfileViewState extends State<ProfileView> {
         padding: const EdgeInsets.only(bottom: 100),
         child: FloatingActionButton(
           onPressed: () async {
-            final newLink = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => AddLinkView()),
-            );
-
-            if (newLink != null && newLink is LinkElement) {
-              setState(() {
-                links.add(newLink);
-              }); 
-            }
+            addLink();
           },
           backgroundColor: kPrimaryColor,
 
@@ -194,17 +206,39 @@ class _ProfileViewState extends State<ProfileView> {
                             );
                           } else if (snapshot.hasData) {
                             final data = snapshot.data!;
-                              return Row(
-                                children: [
-                                  CustomFollowingWidgetButton(text: "followers ${data.followersCount}",onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.followers,title: "Following List",)));
-                                  },),
-                                  SizedBox(width: 10),
-                                  CustomFollowingWidgetButton(text: "following ${data.followingCount}",onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowlistView(followelist:data.following,title: "Followers List",)));
-                                  },),
-                                ],
-                              );
+                            return Row(
+                              children: [
+                                CustomFollowingWidgetButton(
+                                  text: "followers ${data.followersCount}",
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FollowlistView(
+                                          followelist: data.followers,
+                                          title: "Following List",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(width: 10),
+                                CustomFollowingWidgetButton(
+                                  text: "following ${data.followingCount}",
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FollowlistView(
+                                          followelist: data.following,
+                                          title: "Followers List",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
                           } else {
                             return const Text("No data found");
                           }
@@ -247,14 +281,13 @@ class _ProfileViewState extends State<ProfileView> {
         key: ValueKey(link.id),
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
-          extentRatio: 0.35, 
+          extentRatio: 0.35,
           children: [
-            
             InkWell(
               onTap: () => editLink(link),
               child: Container(
-                width: 60, 
-                height: 60, 
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   color: kSecondaryColor,
                   borderRadius: BorderRadius.circular(15),
@@ -263,7 +296,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: const Icon(Icons.edit, color: Colors.white, size: 24),
               ),
             ),
-            
+
             InkWell(
               onTap: () => deleteLink(link),
               child: Container(
@@ -279,11 +312,10 @@ class _ProfileViewState extends State<ProfileView> {
           ],
         ),
 
-        
         child: CustomSocialLinkContent(
           platform: link.title,
           url: link.link,
-          color: kLightDangerColor ?? Colors.deepPurple[100]!, 
+          color: kLightDangerColor ?? Colors.deepPurple[100]!,
         ),
       ),
     );

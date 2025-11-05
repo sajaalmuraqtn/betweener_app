@@ -1,3 +1,4 @@
+import 'package:betweeener_app/core/util/constants.dart';
 import 'package:betweeener_app/views_features/profile/profile_view.dart';
 import 'package:betweeener_app/views_features/recieve/receive_view.dart';
 import 'package:betweeener_app/views_features/widgets/custom_floating_nav_bar.dart';
@@ -26,16 +27,20 @@ class _MainAppViewState extends State<MainAppView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-   
+         backgroundColor: kScaffoldColor,
+
       body: screensList[_currentIndex],
       extendBody: true,
-      bottomNavigationBar: CustomFloatingNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+       bottomNavigationBar: Padding(
+        padding:   EdgeInsets.only(top: 30.0),
+        child: CustomFloatingNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
       ),
     );
   }

@@ -48,8 +48,10 @@ class _HomeViewState extends State<HomeView> {
             onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchByNameView()));},
           ),
           IconButton(
-            icon: Icon(Icons.fullscreen, color: Colors.black),
-            onPressed: () {},
+            icon: Icon(Icons.logout, color: Colors.black),
+            onPressed: () async{
+             await logoutUser(context);
+            },
           ),
         ],
       ),

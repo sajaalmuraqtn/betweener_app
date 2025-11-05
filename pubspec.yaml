@@ -42,6 +42,12 @@ dependencies:
   qr_flutter: ^4.1.0
   flutter_slidable: ^4.0.3
   geolocator: ^14.0.2
+  flutter_launcher_icons: ^0.14.4
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
 
 dev_dependencies:
   flutter_test:

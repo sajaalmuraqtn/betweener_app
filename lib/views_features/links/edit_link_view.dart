@@ -40,7 +40,7 @@ class _EditLinkViewState extends State<EditLinkView> {
         'link': linkController.text,
       }, widget.link!.id).then((isEdited) {
         if (isEdited) {
-          Navigator.pop(context);
+          Navigator.pop(context,isEdited);
         }
       });
     }

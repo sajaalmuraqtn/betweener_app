@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         MainAppView.id: (context) => const MainAppView(),
         ProfileView.id: (context) => const ProfileView(),
         ReceiveView.id: (context) => const ReceiveView(),
-        // ReceiveView.id: (context) => const ReceiveView(),
+        OnBoardingView.id: (context) => const OnBoardingView(),
         // EditLinkView.id: (context) =>  EditLinkView(link: {id}),
       },
     );

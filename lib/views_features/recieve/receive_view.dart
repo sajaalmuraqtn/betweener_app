@@ -9,12 +9,12 @@ class ReceiveView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kScaffoldColor,
       appBar: AppBar(
         title: const Text(
           'Active Sharing',
           style: TextStyle(
-            color: kPrimaryColor, // لون نص داكن
+            color: kPrimaryColor,  
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
@@ -29,25 +29,24 @@ class ReceiveView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(height: 50), // مسافة علوية
+              const SizedBox(height: 50),  
       
               Padding(
                 padding: const EdgeInsets.only(
                   top: 50.0,
-                ), // لتحديد مكان الدبوس بالنسبة للـ Wi-Fi
+                ),  
                 child: Icon(
-                  Icons.emergency_share, // أيقونة الدبوس
+                  Icons.emergency_share, 
                   size: 150,
-                  color: Colors.deepPurple.withOpacity(0.2), // لون فاتح
+                  color: Colors.deepPurple.withOpacity(0.2),  
                 ),
               ),
-              const SizedBox(height: 50), // مسافة بين الأيقونات والقائمة
-              // قائمة الأشخاص المشاركين
-              _buildPersonTile('AHMED ALI'),
+              const SizedBox(height: 50), 
+               CustomPersonActive('AHMED ALI'),
               const SizedBox(height: 15),
-              _buildPersonTile('AHMED ALI'),
+              CustomPersonActive('AHMED ALI'),
               const SizedBox(height: 15),
-              _buildPersonTile('AHMED ALI'),
+              CustomPersonActive('AHMED ALI'),
               const SizedBox(height: 15),
             ],
           ),
@@ -56,11 +55,11 @@ class ReceiveView extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonTile(String name) {
+  Widget CustomPersonActive(String name) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.deepPurple.withOpacity(0.1), // لون بنفسجي فاتح جداً
+        color: Colors.deepPurple.withOpacity(0.1),  
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -69,7 +68,7 @@ class ReceiveView extends StatelessWidget {
             Icons.person,
             color: const Color(
               0xFF2B2B4F,
-            ).withOpacity(0.8), // لون أيقونة الشخص داكن
+            ).withOpacity(0.8), 
             size: 24,
           ),
           const SizedBox(width: 15),
@@ -78,9 +77,9 @@ class ReceiveView extends StatelessWidget {
             style: TextStyle(
               color: const Color(
                 0xFF2B2B4F,
-              ).withOpacity(0.8), // لون نص الشخص داكن
+              ).withOpacity(0.8), 
               fontSize: 18,
-              fontWeight: FontWeight.w600, // خط سميك قليلاً
+              fontWeight: FontWeight.w600, 
             ),
           ),
         ],
